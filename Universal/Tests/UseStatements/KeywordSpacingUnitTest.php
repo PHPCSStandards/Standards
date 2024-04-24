@@ -84,7 +84,7 @@ final class KeywordSpacingUnitTest extends AbstractSniffUnitTest
 
             case 'KeywordSpacingUnitTest.2.inc':
                 return [
-                    11 => 1,
+                    9 => 1,
                 ];
 
             default:
