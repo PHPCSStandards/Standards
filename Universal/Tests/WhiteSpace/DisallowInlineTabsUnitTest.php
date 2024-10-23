@@ -76,7 +76,7 @@ final class DisallowInlineTabsUnitTest extends AbstractSniffUnitTest
     {
         // As of PHP 8.3, comments may be tokenized within a "yield from" token, but only for PHPCS < 3.11.0.
         $commentsInYieldFrom = false;
-        if (\PHP_VERSION_ID >= 80300 /*&& \version_compare(Config::VERSION, '3.11.0', '<')*/) {
+        if (\PHP_VERSION_ID >= 80300 && \version_compare(Config::VERSION, '3.11.0', '<')) {
             $commentsInYieldFrom = true;
         }
 
