@@ -102,6 +102,8 @@ jobs:
   phpstan:
     name: "PHPStan"
     uses: PHPCSStandards/.github/.github/workflows/reusable-phpstan.yml@main
+    with:
+      phpstanVersion: '1.x'
 
   remark:
     name: 'QA Markdown'
