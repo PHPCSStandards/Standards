@@ -20,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      XMLLINT_INDENT: '    '
       # - COMPOSER_ROOT_VERSION is needed to get round the recursive dependency when using CI.
       COMPOSER_ROOT_VERSION: '1.99.99'
 
@@ -73,13 +72,6 @@ jobs:
       - name: Validate rulesets against schema
         run: xmllint --noout --schema vendor/squizlabs/php_codesniffer/phpcs.xsd ./*/ruleset.xml
 
-      # Check the code-style consistency of the XML ruleset files.
-      - name: Check XML code style
-        run: |
-          diff -B ./Modernize/ruleset.xml <(xmllint --format "./Modernize/ruleset.xml")
-          diff -B ./NormalizedArrays/ruleset.xml <(xmllint --format "./NormalizedArrays/ruleset.xml")
-          diff -B ./Universal/ruleset.xml <(xmllint --format "./Universal/ruleset.xml")
-
       # Validate the Documentation XML files.
       - name: Validate documentation against schema
         run: xmllint --noout --schema vendor/phpcsstandards/phpcsdevtools/DocsXsd/phpcsdocs.xsd ./*/Docs/*/*Standard.xml
@@ -98,6 +90,38 @@ jobs:
       # At a later stage the documentation check can be activated.
       - name: Check sniff feature completeness
         run: composer check-complete
+
+  xml-cs:
+    name: 'XML Code style'
+    runs-on: ubuntu-latest
+
+    env:
+      XMLLINT_INDENT: '    '
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Updating the lists can fail intermittently, typically after Microsoft has released a new package.
+      # This should not be blocking for this job, so ignore any errors from this step.
+      # Ref: https://github.com/dotnet/core/issues/4167
+      - name: Update the available packages list
+        continue-on-error: true
+        run: sudo apt-get update
+
+      - name: Install xmllint
+        run: sudo apt-get install --no-install-recommends -y libxml2-utils
+
+      # Show XML violations inline in the file diff.
+      - name: Enable showing XML issues inline
+        uses: korelstar/xmllint-problem-matcher@v1
+
+      # Check the code-style consistency of the XML ruleset files.
+      - name: Check XML code style
+        run: |
+          diff -B ./Modernize/ruleset.xml <(xmllint --format "./Modernize/ruleset.xml")
+          diff -B ./NormalizedArrays/ruleset.xml <(xmllint --format "./NormalizedArrays/ruleset.xml")
+          diff -B ./Universal/ruleset.xml <(xmllint --format "./Universal/ruleset.xml")
 
   phpstan:
     name: "PHPStan"
